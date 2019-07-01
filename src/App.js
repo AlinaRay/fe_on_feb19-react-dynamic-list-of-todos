@@ -75,8 +75,8 @@ export default class App extends React.Component {
                     />
                 ) : (
                     <button onClick={this.loadData}
-                            disabled={isLoading}>{isLoading ? "details"
-                        : "loading"}
+                            disabled={isLoading}>{isLoading ?"loading"
+                        :  "details"}
                     </button>
 
                 )}
