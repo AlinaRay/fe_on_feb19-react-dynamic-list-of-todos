@@ -1,6 +1,6 @@
 import React from 'react';
-import { getAllTodos } from './components/util/TodoApi';
-import { getAllUsers } from './components/util/UserApi';
+import {getAllTodos} from './components/util/TodoApi';
+import {getAllUsers} from './components/util/UserApi';
 import TodoList, {
     SORT_ORDER_COMPLETED, SORT_ORDER_TITLE, SORT_ORDER_USER
 } from './components/todo-list/TodoList';
@@ -11,32 +11,30 @@ export default class App extends React.Component {
         super(props);
         this.state = {
             sortField: SORT_ORDER_TITLE,
-            isLoaded: false,
             isLoading: false,
             todoData: [],
         };
 
         this.handleSort = (sortField) => {
-            this.setState({sortField});
+            this.setState(() => {
+                return {
+                    sortField: sortField
+                }
+            });
         };
     }
 
-    loadData = async  () => {
+    loadData = async () => {
         this.setState({isLoading: true});
-        const [todos, users] =await Promise.all([
+        const [todos, users] = await Promise.all([
             getAllTodos(),
             getAllUsers(),
         ]);
         const items = this.getTodosWithUsers(todos, users);
         this.setState({
-            todosData: items
+            todosData: items,
+            isLoading: false
         });
-        setTimeout(() => {
-            this.setState({
-                isLoaded: true,
-                isLoading: false,
-            });
-        }, 1500);
     };
 
     getTodosWithUsers = (todos, users) => {
@@ -49,34 +47,42 @@ export default class App extends React.Component {
     };
 
     sortTodos(todos, sortField) {
-        const callbackMap = {
-            [SORT_ORDER_TITLE]: (a, b) => a.title.localeCompare(b.title),
-            [SORT_ORDER_USER]: (a, b) => a.user.name.localeCompare(b.user.name),
-            [SORT_ORDER_COMPLETED]: (a, b) => a.completed - b.completed,
+        let callbackMap = {
+            [SORT_ORDER_TITLE.name]: (a, b) => a.title.localeCompare(b.title),
+            [SORT_ORDER_USER.name]: (a, b) => a.user.name.localeCompare(b.user.name),
+            [SORT_ORDER_COMPLETED.name]: (a, b) => a.completed - b.completed,
         };
-        const callback = callbackMap[sortField] || callbackMap.SORT_ORDER_TITLE;
-        console.log(todos);
+
+        const callback = callbackMap[sortField.name] || callbackMap.SORT_ORDER_TITLE;
         if (todos) {
-            return todos.sort(callback);
+            if (sortField.order) {
+                sortField.order = !sortField.order;
+                return todos.sort(callback);
+            } else {
+                sortField.order = !sortField.order;
+                return todos.sort(callback).reverse();
+
+            }
         }
     }
 
 
     render() {
-        const { todosData, isLoaded,isLoading, sortField } = this.state;
+        const {todosData, isLoading, sortField} = this.state;
         const visibleTodos = this.sortTodos(todosData, sortField);
         return (
             <div className="App">
                 <h1>React dynamic list of todos</h1>
-                { isLoaded ? (
+                {todosData ? (
                     <TodoList
                         todos={visibleTodos}
                         onSort={this.handleSort}
                     />
+
                 ) : (
                     <button onClick={this.loadData}
-                            disabled={isLoading}>{isLoading ?"loading"
-                        :  "details"}
+                            disabled={isLoading}>{isLoading ? "loading"
+                        : "details"}
                     </button>
 
                 )}
