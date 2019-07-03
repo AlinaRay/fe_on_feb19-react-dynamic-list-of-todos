@@ -47,22 +47,18 @@ export default class App extends React.Component {
     };
 
     sortTodos(todos, sortField) {
-        let callbackMap = {
-            [SORT_ORDER_TITLE.name]: (a, b) => a.title.localeCompare(b.title),
-            [SORT_ORDER_USER.name]: (a, b) => a.user.name.localeCompare(b.user.name),
-            [SORT_ORDER_COMPLETED.name]: (a, b) => a.completed - b.completed,
-        };
+        let order = sortField.order ? 1 : -1;
 
+        let callbackMap = {
+            [SORT_ORDER_TITLE.name]: (a, b) => a.title.localeCompare(b.title) * order,
+            [SORT_ORDER_USER.name]: (a, b) => a.user.name.localeCompare(b.user.name) * order,
+            [SORT_ORDER_COMPLETED.name]: (a, b) => (a.completed - b.completed) * order
+        };
         const callback = callbackMap[sortField.name] || callbackMap.SORT_ORDER_TITLE;
         if (todos) {
-            if (sortField.order) {
-                sortField.order = !sortField.order;
-                return todos.sort(callback);
-            } else {
-                sortField.order = !sortField.order;
-                return todos.sort(callback).reverse();
-
-            }
+            console.log(order);
+            sortField.order = !sortField.order;
+            return todos.sort(callback);
         }
     }
 

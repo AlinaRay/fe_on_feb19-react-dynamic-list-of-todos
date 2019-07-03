@@ -10,6 +10,7 @@ export default function TodoItem(props) {
                 <input
                     type="checkbox"
                     checked={props.completed}
+                    readOnly
                 />
             </td>
             <td>
