@@ -3,26 +3,27 @@ import User from "../user/User";
 
 
 export default function TodoItem(props) {
+    const {id, text, completed, user} = props;
     return (
         <tr className="item"
-            key={props.id}>
+            key={id}>
             <td>
                 <input
                     type="checkbox"
-                    checked={props.completed}
+                    checked={completed}
                     readOnly
                 />
             </td>
             <td>
                 <label
                     className="label">
-                    {props.text}
+                    {text}
                 </label>
             </td>
             <td>
                 <User
-                    key={props.user.id}
-                    name={props.user.name}
+                    key={user.id}
+                    name={user.name}
                 />
             </td>
         </tr>
